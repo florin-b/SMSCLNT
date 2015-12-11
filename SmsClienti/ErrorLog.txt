@@ -1,0 +1,6 @@
+2015-12-11 08:56:57.178 : java.sql.SQLException: ORA-01017: invalid username/password; logon denied
+
+2015-12-11 08:58:26.172 : java.sql.SQLException: ORA-01017: invalid username/password; logon denied
+
+2015-12-11 09:15:21.413 : java.sql.SQLSyntaxErrorException: ORA-00921: sfârºit neaºteptat al unei comenzi SQL
+
