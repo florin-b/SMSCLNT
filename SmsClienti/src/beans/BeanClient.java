@@ -1,10 +1,22 @@
 package beans;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import database.Client;
+import utils.MapsUtils;
+
 public class BeanClient {
 
 	private String codClient;
 	private String numeClient;
 	private Address adresa;
+	private String coordGps;
+	private String codAdresa;
+	private int distClPrecedent;
+	private int initKm;
+	private boolean smsEmis;
 
 	public String getCodClient() {
 		return codClient;
@@ -28,6 +40,14 @@ public class BeanClient {
 
 	public void setAdresa(Address adresa) {
 		this.adresa = adresa;
+	}
+
+	public int getInitKm() {
+		return initKm;
+	}
+
+	public void setInitKm(int initKm) {
+		this.initKm = initKm;
 	}
 
 	@Override
@@ -61,9 +81,62 @@ public class BeanClient {
 		return true;
 	}
 
+	public String getCoordGps() {
+		return coordGps;
+	}
+
+	public void setCoordGps(Connection con, ResultSet rs, Address adr) {
+		try {
+			if (!rs.getString("latitudine").trim().equals("0"))
+				this.coordGps = rs.getString("latitudine") + "," + rs.getString("longitudine");
+			else {
+				CoordonateGps coordGps = null;
+				try {
+					coordGps = MapsUtils.geocodeAddress(adr);
+					new Client().saveCoordonateAdresa(con, adr.getIdAdress(), coordGps);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				this.coordGps = String.valueOf(coordGps.getLatitude()) + "," + String.valueOf(coordGps.getLongitude());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void setCoordGps(String coordGps) {
+		this.coordGps = coordGps;
+	}
+
+	public String getCodAdresa() {
+		return codAdresa;
+	}
+
+	public void setCodAdresa(String codAdresa) {
+		this.codAdresa = codAdresa;
+	}
+
+	public int getDistClPrecedent() {
+		return distClPrecedent;
+	}
+
+	public void setDistClPrecedent(int distClPrecedent) {
+		this.distClPrecedent = distClPrecedent;
+	}
+
+	public boolean isSmsEmis() {
+		return smsEmis;
+	}
+
+	public void setSmsEmis(boolean smsEmis) {
+		this.smsEmis = smsEmis;
+	}
+
 	@Override
 	public String toString() {
-		return "BeanClient [codClient=" + codClient + ", numeClient=" + numeClient + ", adresa=" + adresa + "] \n";
+		return "BeanClient [codClient=" + codClient + ", numeClient=" + numeClient + ", adresa=" + adresa + ", coordGps=" + coordGps + ", codAdresa="
+				+ codAdresa + ", distClPrecedent=" + distClPrecedent + ", initKm=" + initKm + ", smsEmis=" + smsEmis + "]";
 	}
 
 }

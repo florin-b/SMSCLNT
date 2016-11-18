@@ -2,8 +2,9 @@ package beans;
 
 public class BeanDistantaClient {
 
-	public String codClient;
-	public int distanta;
+	private String codClient;
+	private int distanta;
+	private String codAdresa;
 
 	public String getCodClient() {
 		return codClient;
@@ -21,9 +22,17 @@ public class BeanDistantaClient {
 		this.distanta = distanta;
 	}
 
+	public String getCodAdresa() {
+		return codAdresa;
+	}
+
+	public void setCodAdresa(String codAdresa) {
+		this.codAdresa = codAdresa;
+	}
+
 	@Override
 	public String toString() {
-		return "BeanDistantaClient [codClient=" + codClient + ", distanta=" + distanta + "]";
+		return "BeanDistantaClient [codClient=" + codClient + ", distanta=" + distanta + ", codAdresa=" + codAdresa + "]";
 	}
 
 }

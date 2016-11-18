@@ -4,3 +4,27 @@
 
 2015-12-11 09:15:21.413 : java.sql.SQLSyntaxErrorException: ORA-00921: sfârºit neaºteptat al unei comenzi SQL
 
+2016-06-21 13:43:35.267 : java.sql.SQLSyntaxErrorException: ORA-00904: "DATAEXP": identificator nevalid
+
+2016-06-21 13:43:47.034 : java.sql.SQLSyntaxErrorException: ORA-00904: "DATAEXP": identificator nevalid
+
+2016-06-22 12:07:15.613 : java.sql.SQLIntegrityConstraintViolationException: ORA-00001: restricþia unicã (UNKNOWN.obj#=934502) nu este respectatã
+
+2016-06-22 12:08:37.721 : java.sql.SQLIntegrityConstraintViolationException: ORA-00001: restricþia unicã (UNKNOWN.obj#=934502) nu este respectatã
+
+2016-06-22 12:11:13.156 : java.sql.SQLIntegrityConstraintViolationException: ORA-00001: restricþia unicã (UNKNOWN.obj#=934502) nu este respectatã
+
+2016-09-08 14:42:43.691 : java.lang.NullPointerException
+2016-09-08 14:43:48.466 : java.lang.NullPointerException
+2016-09-09 10:13:47.691 : java.lang.NullPointerException
+2016-09-16 12:03:33.395 : java.sql.SQLException: ORA-01468: un predicat poate referi numai o tabelã anexatã de tip cu întoarcere erori
+
+2016-09-16 12:06:46.808 : java.lang.NullPointerException
+2016-09-16 12:07:58.48 : java.lang.NullPointerException
+2016-09-16 12:08:23.348 : java.lang.NullPointerException
+2016-10-03 10:35:00.387 : java.lang.NullPointerException
+2016-10-03 10:37:04.886 : java.lang.NullPointerException
+2016-10-03 10:38:18.602 : java.lang.NullPointerException
+2016-10-03 10:39:40.003 : java.lang.NullPointerException
+2016-10-03 10:41:21.778 : java.lang.NullPointerException
+2016-10-03 10:42:17.973 : java.lang.NullPointerException

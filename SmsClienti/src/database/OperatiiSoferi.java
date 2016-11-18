@@ -15,7 +15,9 @@ public class OperatiiSoferi {
 		DBManager dbManager = new DBManager();
 		List<String> listSoferi = new ArrayList<>();
 
-		try (Connection con = dbManager.getTestConnection(); PreparedStatement prep = con.prepareStatement("SELECT cod FROM soferi WHERE fili =?");) {
+		String sqlString = " SELECT cod FROM soferi WHERE fili =?";
+
+		try (Connection con = dbManager.getTestConnection(); PreparedStatement prep = con.prepareStatement(sqlString);) {
 			prep.setString(1, codFiliala);
 			prep.executeQuery();
 

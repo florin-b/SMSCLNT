@@ -11,8 +11,8 @@ public class DBManager {
 
 		String url = "jdbc:oracle:thin:@10.1.3.94:1521:prd002";
 		Properties properties = new Properties();
-		properties.put("user", "user");
-		properties.put("password", "password");
+		properties.put("user", "WEBSAP");
+		properties.put("password", "2INTER7");
 
 		return DriverManager.getConnection(url, properties);
 
@@ -22,8 +22,8 @@ public class DBManager {
 
 		String url = "jdbc:oracle:thin:@10.1.3.89:1527:tes";
 		Properties properties = new Properties();
-		properties.put("user", "user");
-		properties.put("password", "password");
+		properties.put("user", "WEBSAP");
+		properties.put("password", "2INTER7");
 
 		return DriverManager.getConnection(url, properties);
 

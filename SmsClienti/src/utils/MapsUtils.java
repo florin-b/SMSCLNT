@@ -1,5 +1,9 @@
 package utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
@@ -9,7 +13,9 @@ import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
 
 import beans.Address;
+import beans.BeanClient;
 import beans.CoordonateGps;
+import beans.StareMasina;
 
 public class MapsUtils {
 
@@ -23,7 +29,36 @@ public class MapsUtils {
 		DirectionsRoute[] routes = DirectionsApi.newRequest(context).mode(TravelMode.DRIVING).origin(start).destination(stop).mode(TravelMode.DRIVING)
 				.optimizeWaypoints(true).await();
 
-		return routes[0].legs[0].distance.inMeters;
+		return routes[0].legs[0].distance.inMeters / 1000;
+
+	}
+
+	public static DirectionsRoute[] traseuBorderou(StareMasina stareMasina, Set<BeanClient> listClienti) throws Exception {
+
+		List<String> wayPoints = new ArrayList<>();
+		String stopPoint = "";
+		
+		
+		//limitare 23 clienti!
+		for (BeanClient client : listClienti) {
+
+			if (Double.valueOf(client.getCoordGps().split(",")[0]) > 0) {
+				wayPoints.add(client.getCoordGps());
+				stopPoint = client.getCoordGps();
+			}
+		}
+
+		String[] arrayPoints = wayPoints.toArray(new String[wayPoints.size()]);
+
+		GeoApiContext context = new GeoApiContext().setApiKey(Constants.GOOGLE_MAPS_API_KEY);
+
+		LatLng start = new LatLng(stareMasina.getCoordonateGps().getLatitude(), stareMasina.getCoordonateGps().getLongitude());
+		LatLng stop = new LatLng(Double.valueOf(stopPoint.split(",")[0]), Double.valueOf(stopPoint.split(",")[1]));
+
+		DirectionsRoute[] routes = DirectionsApi.newRequest(context).mode(TravelMode.DRIVING).origin(start).destination(stop).waypoints(arrayPoints)
+				.mode(TravelMode.DRIVING).optimizeWaypoints(false).await();
+
+		return routes;
 
 	}
 
@@ -57,8 +92,13 @@ public class MapsUtils {
 		GeoApiContext context = new GeoApiContext().setApiKey(Constants.GOOGLE_MAPS_API_KEY);
 		GeocodingResult[] results = GeocodingApi.geocode(context, strAddress.toString()).await();
 
-		double latitude = results[0].geometry.location.lat;
-		double longitude = results[0].geometry.location.lng;
+		double latitude = 0;
+		double longitude = 0;
+
+		if (results.length > 0) {
+			latitude = results[0].geometry.location.lat;
+			longitude = results[0].geometry.location.lng;
+		}
 
 		coordonateGps = new CoordonateGps(latitude, longitude);
 
@@ -66,6 +106,10 @@ public class MapsUtils {
 	}
 
 	public static double distanceStraightXtoY(double lat1, double lon1, double lat2, double lon2, String unit) {
+
+		if (lat1 == lat2 && lon1 == lon2)
+			return 0;
+
 		double theta = lon1 - lon2;
 		double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
 		dist = Math.acos(dist);
