@@ -1,7 +1,5 @@
 package main;
 
-import java.sql.SQLException;
-
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +11,7 @@ import database.OperatiiMasina;
 import database.OperatiiSms;
 import database.OperatiiSoferi;
 import logs.LogMessage;
+import utils.EnumTipMasina;
 import utils.MailOperations;
 
 public class MainAppSms {
@@ -23,7 +22,7 @@ public class MainAppSms {
 			//List<String> listAdrese = new OperatiiBorderou().getBorderouriByDate();
 
 			try {
-			//	new OperatiiBorderou().saveCoordonateAdrese(listAdrese);
+				 //new OperatiiBorderou().saveCoordonateAdrese(listAdrese);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -37,10 +36,11 @@ public class MainAppSms {
 	}
 
 	private void startApp() {
+
+		Borderou borderouActiv = null;
+
 		try {
 			List<String> listSoferi = new OperatiiSoferi().getListSoferi("GL10");
-
-			Borderou borderouActiv = null;
 
 			for (String sofer : listSoferi) {
 
@@ -69,7 +69,7 @@ public class MainAppSms {
 		} catch (Exception e) {
 			e.printStackTrace();
 			LogMessage.writeErrorLog(e.toString());
-			MailOperations.sendMail(e.toString());
+			MailOperations.sendMail(e.toString() + " borderou = " + borderouActiv);
 		}
 
 	}

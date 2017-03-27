@@ -17,7 +17,7 @@ public class OperatiiSoferi {
 
 		String sqlString = " SELECT cod FROM soferi WHERE fili =?";
 
-		try (Connection con = dbManager.getTestConnection(); PreparedStatement prep = con.prepareStatement(sqlString);) {
+		try (Connection con = dbManager.getProdConnection(); PreparedStatement prep = con.prepareStatement(sqlString);) {
 			prep.setString(1, codFiliala);
 			prep.executeQuery();
 

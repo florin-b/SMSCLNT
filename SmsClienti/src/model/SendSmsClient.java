@@ -20,15 +20,9 @@ public class SendSmsClient {
 
 			String msgText = "Comanda dumneavoastra va fi livrata in urmatoarele 2 ore.";
 
-			//MailOperations.sendMail(msgText + "tel = " + nrTelefon + " , codcl = " + codClient + " , " + client);
-
-			// nrTelefon = "0742290177";
-
 			proxy.sendSession(sessionId, nrTelefon, msgText, Calendar.getInstance(), "", 0);
 
 			proxy.closeSession(sessionId);
-			
-			
 
 		} catch (RemoteException e) {
 			messageSent = false;

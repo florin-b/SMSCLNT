@@ -18,7 +18,7 @@ public class DBManager {
 
 	}
 
-	public Connection getTestConnection() throws SQLException {
+	private Connection getTestConnection() throws SQLException {
 
 		String url = "jdbc:oracle:thin:@10.1.3.89:1527:tes";
 		Properties properties = new Properties();

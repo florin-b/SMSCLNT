@@ -16,6 +16,7 @@ import model.SendSmsClient;
 import queries.SqlQueries;
 import utils.Constants;
 import utils.DBUtils;
+import utils.DateTimeUtils;
 
 public class OperatiiSms {
 
@@ -55,7 +56,7 @@ public class OperatiiSms {
 
 				System.out.println("Timp sosire =" + timpSosireH + " , distanta = " + client);
 
-				if (timpSosireH >= INTERVAL_ALERTA_MIN_H && timpSosireH <= INTERVAL_ALERTA_MAX_H && !client.isSmsEmis()) {
+				if (timpSosireH >= INTERVAL_ALERTA_MIN_H && timpSosireH <= INTERVAL_ALERTA_MAX_H && !client.isSmsEmis() && DateTimeUtils.isTimeToSendSmsAlert()) {
 					sendSmsAlert(codSofer, borderou.getNrBorderou(), client, stareMasina);
 					System.out.println(
 							"Expediere sms =" + borderou.getNrBorderou() + " , client = " + client.getCodClient() + " , adresa = " + client.getCodAdresa());
