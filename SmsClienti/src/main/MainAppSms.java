@@ -6,12 +6,14 @@ import java.util.Set;
 import beans.BeanClient;
 import beans.Borderou;
 import beans.StareMasina;
+import beans.VitezaMedie;
 import database.OperatiiBorderou;
 import database.OperatiiMasina;
 import database.OperatiiSms;
 import database.OperatiiSoferi;
 import logs.LogMessage;
-import utils.EnumTipMasina;
+import model.VitezeService;
+import utils.Constants;
 import utils.MailOperations;
 
 public class MainAppSms {
@@ -19,14 +21,7 @@ public class MainAppSms {
 	public static void main(String[] args) {
 
 		try {
-			//List<String> listAdrese = new OperatiiBorderou().getBorderouriByDate();
-
-			try {
-				 //new OperatiiBorderou().saveCoordonateAdrese(listAdrese);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
+			// new OperatiiBorderou().saveCoordonateAdrese(listAdrese);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -38,6 +33,8 @@ public class MainAppSms {
 	private void startApp() {
 
 		Borderou borderouActiv = null;
+
+		List<VitezaMedie> listViteze = new VitezeService().getVitezeMedii();
 
 		try {
 			List<String> listSoferi = new OperatiiSoferi().getListSoferi("GL10");
@@ -58,7 +55,7 @@ public class MainAppSms {
 							listClienti = new OperatiiBorderou().getClientiBorderouOnline(borderouActiv.getNrBorderou(), stareMasina);
 
 						if (listClienti.size() > 0) {
-							new OperatiiSms().expediazaSms(sofer, borderouActiv, listClienti, stareMasina);
+							new OperatiiSms().expediazaSms(sofer, borderouActiv, listClienti, stareMasina, listViteze);
 						}
 					}
 

@@ -7,11 +7,13 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Set;
 
 import beans.BeanClient;
 import beans.Borderou;
 import beans.StareMasina;
+import beans.VitezaMedie;
 import model.SendSmsClient;
 import queries.SqlQueries;
 import utils.Constants;
@@ -23,7 +25,8 @@ public class OperatiiSms {
 	private final double INTERVAL_ALERTA_MIN_H = 0.2;
 	private final double INTERVAL_ALERTA_MAX_H = 2;
 
-	public void expediazaSms(String codSofer, Borderou borderou, Set<BeanClient> listClienti, StareMasina stareMasina) throws SQLException {
+	public void expediazaSms(String codSofer, Borderou borderou, Set<BeanClient> listClienti, StareMasina stareMasina, List<VitezaMedie> listViteze)
+			throws SQLException {
 
 		double timpSosireH = 0;
 
@@ -50,14 +53,17 @@ public class OperatiiSms {
 
 			if (distantaTotal > 0) {
 
-				timpSosireH = (double) (distantaTotal) / Constants.getVitezaMedie_KM_H(borderou.getTipMasina());
+				timpSosireH = (distantaTotal) / Constants.getVitezaMedie_KM_H(borderou, listViteze);
 
 				timpSosireH += nrOpriri * Constants.getTimpStationareH(borderou.getTipMasina());
 
 				System.out.println("Timp sosire =" + timpSosireH + " , distanta = " + client);
 
-				if (timpSosireH >= INTERVAL_ALERTA_MIN_H && timpSosireH <= INTERVAL_ALERTA_MAX_H && !client.isSmsEmis() && DateTimeUtils.isTimeToSendSmsAlert()) {
+				if (timpSosireH >= INTERVAL_ALERTA_MIN_H && timpSosireH <= INTERVAL_ALERTA_MAX_H && !client.isSmsEmis()
+						&& DateTimeUtils.isTimeToSendSmsAlert()) {
+
 					sendSmsAlert(codSofer, borderou.getNrBorderou(), client, stareMasina);
+
 					System.out.println(
 							"Expediere sms =" + borderou.getNrBorderou() + " , client = " + client.getCodClient() + " , adresa = " + client.getCodAdresa());
 

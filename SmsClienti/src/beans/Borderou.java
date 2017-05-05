@@ -1,11 +1,12 @@
 package beans;
 
-import utils.EnumTipMasina;
+import enums.EnumTipMasina;
 
 public class Borderou {
 
 	private String nrBorderou;
 	private EnumTipMasina tipMasina;
+	private String filiala;
 
 	public String getNrBorderou() {
 		return nrBorderou;
@@ -23,9 +24,17 @@ public class Borderou {
 		this.tipMasina = tipMasina;
 	}
 
+	public String getFiliala() {
+		return filiala;
+	}
+
+	public void setFiliala(String filiala) {
+		this.filiala = filiala;
+	}
+
 	@Override
 	public String toString() {
-		return "Borderou [nrBorderou=" + nrBorderou + ", tipMasina=" + tipMasina + "]";
+		return "Borderou [nrBorderou=" + nrBorderou + ", tipMasina=" + tipMasina + ", filiala=" + filiala + "]";
 	}
 
 }

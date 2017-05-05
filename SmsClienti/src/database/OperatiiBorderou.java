@@ -20,8 +20,8 @@ import beans.BeanDistantaClient;
 import beans.Borderou;
 import beans.CoordonateGps;
 import beans.StareMasina;
+import enums.EnumTipMasina;
 import queries.SqlQueries;
-import utils.EnumTipMasina;
 import utils.MapsUtils;
 
 public class OperatiiBorderou {
@@ -83,6 +83,7 @@ public class OperatiiBorderou {
 			tipMasina = EnumTipMasina.NEDEFINIT;
 
 		borderou.setTipMasina(tipMasina);
+		borderou.setFiliala(rs.getString(2));
 
 		if (stmt != null)
 			stmt.close();
@@ -168,9 +169,6 @@ public class OperatiiBorderou {
 			System.out.println(e.toString());
 		}
 
-		
-		
-		
 		int i = 0;
 		for (BeanClient client : listClienti) {
 			client.setDistClPrecedent((int) bordRoute[0].legs[i].distance.inMeters / 1000);

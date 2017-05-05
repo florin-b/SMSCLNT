@@ -37,9 +37,8 @@ public class MapsUtils {
 
 		List<String> wayPoints = new ArrayList<>();
 		String stopPoint = "";
-		
-		
-		//limitare 23 clienti!
+
+		// limitare 23 clienti!
 		for (BeanClient client : listClienti) {
 
 			if (Double.valueOf(client.getCoordGps().split(",")[0]) > 0) {

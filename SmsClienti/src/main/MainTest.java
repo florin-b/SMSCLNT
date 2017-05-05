@@ -21,7 +21,10 @@ public class MainTest {
 		try {
 			// testApi();
 
-			System.out.println(isTimeToSmsAlert());
+			//System.out.println(isTimeToSmsAlert());
+			
+			
+			
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

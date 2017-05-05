@@ -56,7 +56,7 @@ public class SqlQueries {
 	public static String getTipMasina() {
 
 		StringBuilder str = new StringBuilder();
-		str.append(" select k.user1 from sapprd.aufk k, borderouri b where mandt = '900' and b.numarb =? and b.masina = k.ktext ");
+		str.append(" select k.user1, b.fili from sapprd.aufk k, borderouri b where mandt = '900' and b.numarb =? and b.masina = k.ktext ");
 
 		return str.toString();
 
@@ -142,6 +142,15 @@ public class SqlQueries {
 
 		return str.toString();
 
+	}
+
+	public static String getVitezeMedii() {
+		StringBuilder str = new StringBuilder();
+
+		str.append(" select tipmasina, filiala, avg(vitezamedie) from sapprd.zvitezemedii ");
+		str.append(" where datac >=? group by tipmasina, filiala ");
+
+		return str.toString();
 	}
 
 }
