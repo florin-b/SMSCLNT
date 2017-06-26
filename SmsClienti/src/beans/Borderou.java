@@ -1,5 +1,7 @@
 package beans;
 
+import java.util.Date;
+
 import enums.EnumTipMasina;
 
 public class Borderou {
@@ -7,6 +9,8 @@ public class Borderou {
 	private String nrBorderou;
 	private EnumTipMasina tipMasina;
 	private String filiala;
+	private boolean isLivrareTL;
+	private int minuteFromStart;
 
 	public String getNrBorderou() {
 		return nrBorderou;
@@ -32,9 +36,26 @@ public class Borderou {
 		this.filiala = filiala;
 	}
 
+	public boolean isLivrareTL() {
+		return isLivrareTL;
+	}
+
+	public void setLivrareTL(boolean isLivrareTL) {
+		this.isLivrareTL = isLivrareTL;
+	}
+
+	public int getMinuteFromStart() {
+		return minuteFromStart;
+	}
+
+	public void setMinuteFromStart(int minuteFromStart) {
+		this.minuteFromStart = minuteFromStart;
+	}
+
 	@Override
 	public String toString() {
-		return "Borderou [nrBorderou=" + nrBorderou + ", tipMasina=" + tipMasina + ", filiala=" + filiala + "]";
+		return "Borderou [nrBorderou=" + nrBorderou + ", tipMasina=" + tipMasina + ", filiala=" + filiala + ", isLivrareTL=" + isLivrareTL
+				+ ", minuteFromStart=" + minuteFromStart + "]";
 	}
 
 }

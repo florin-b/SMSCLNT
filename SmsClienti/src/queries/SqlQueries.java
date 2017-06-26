@@ -7,10 +7,10 @@ public class SqlQueries {
 		StringBuilder str = new StringBuilder();
 
 		str.append("select  a.cod_client, c.nume, a.adresa_client, b.city1,b.street,b.house_num1,b.region, ");
-		str.append("nvl(d.latitudine,'0') latitudine, nvl(d.longitudine, '0') longitudine , a.adresa_client, nvl(z.codclient,'-1') smsclient from ");
-		str.append("sapprd.zdocumentesms a, sapprd.adrc b, clienti c, sapprd.zcoordadrese d, sapprd.zsmsclienti z, ");
+		str.append("nvl(d.latitude,'0') latitudine, nvl(d.longitude, '0') longitudine , a.adresa_client, nvl(z.codclient,'-1') smsclient from ");
+		str.append("sapprd.zdocumentesms a, sapprd.adrc b, clienti c, sapprd.zadreseclienti d, sapprd.zsmsclienti z, ");
 		str.append(" sapprd.zordinelivrari o where ");
-		str.append("a.nr_bord =?  and d.idadresa(+) = a.adresa_client ");
+		str.append("a.nr_bord =?  and d.codadresa(+) = a.adresa_client and d.codclient(+) = a.cod_client ");
 		str.append("and b.client = '900' and c.cod = a.cod_client ");
 		str.append("and b.addrnumber = a.adresa_client ");
 		str.append(" and z.borderou(+)=a.nr_bord and z.codclient(+) = a.cod_client and z.codadresa(+)=a.adresa_client ");
@@ -33,7 +33,7 @@ public class SqlQueries {
 	public static String getPozitieMasina() {
 		StringBuilder str = new StringBuilder();
 
-		str.append(" select latitude, longitude, mileage from gps_index where device_id = ");
+		str.append(" select latitude, longitude, mileage, speed from gps_index where device_id = ");
 		str.append(" (select id from gps_masini where nr_masina = ");
 		str.append(" (select replace(masina,'-','') nrauto from ( ");
 		str.append(" select masina from websap.borderouri where numarb =?))) ");
@@ -44,10 +44,10 @@ public class SqlQueries {
 	public static String getStareBorderou() {
 		StringBuilder str = new StringBuilder();
 
-		str.append(" select document from sapprd.zevenimentsofer where ");
+		str.append(" select document, data||' '||ora datastart from sapprd.zevenimentsofer where ");
 		str.append(" document = (select numarb from ( ");
 		str.append(" select numarb from websap.borderouri where sttrg in( 4, 6) ");
-		str.append(" and cod_sofer =? order by sttrg desc,data_e asc) x where rownum<2) ");
+		str.append(" and cod_sofer =? and shtyp = '1110' order by sttrg desc,data_e asc) x where rownum<2) ");
 		str.append(" and client = document and eveniment = 'P' ");
 
 		return str.toString();
@@ -57,6 +57,16 @@ public class SqlQueries {
 
 		StringBuilder str = new StringBuilder();
 		str.append(" select k.user1, b.fili from sapprd.aufk k, borderouri b where mandt = '900' and b.numarb =? and b.masina = k.ktext ");
+
+		return str.toString();
+
+	}
+
+	public static String getJudeteBorderou() {
+
+		StringBuilder str = new StringBuilder();
+		str.append(" select distinct c.region from sapprd.adrc c, sapprd.zdocumentebord b where c.client = '900' ");
+		str.append(" and b.mandt='900' and c.addrnumber = b.adresa and b.nr_bord=? ");
 
 		return str.toString();
 
@@ -151,6 +161,29 @@ public class SqlQueries {
 		str.append(" where datac >=? group by tipmasina, filiala ");
 
 		return str.toString();
+	}
+
+	public static String getNrMasina() {
+		StringBuilder str = new StringBuilder();
+		str.append(" select masina from borderouri where numarb=? ");
+
+		return str.toString();
+	}
+
+	public static String getClientAnterior() {
+
+		StringBuilder str = new StringBuilder();
+		str.append(" select client from sapprd.zordinelivrari where borderou =? and pozitie = ");
+		str.append(" (select pozitie from sapprd.zordinelivrari where borderou =? and client =?) - 1 ");
+		return str.toString();
+
+	}
+
+	public static String isClientLivrat() {
+		StringBuilder str = new StringBuilder();
+		str.append(" select 1 from sapprd.zevenimentsofer where document=? and client =? ");
+		return str.toString();
+
 	}
 
 }

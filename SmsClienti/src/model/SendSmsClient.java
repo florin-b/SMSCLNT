@@ -26,6 +26,7 @@ public class SendSmsClient {
 
 		} catch (RemoteException e) {
 			messageSent = false;
+			MailOperations.sendMail(e.toString());
 		}
 
 		return messageSent;

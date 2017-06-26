@@ -22,6 +22,8 @@ import beans.CoordonateGps;
 import beans.StareMasina;
 import enums.EnumTipMasina;
 import queries.SqlQueries;
+import utils.DateTimeUtils;
+import utils.MailOperations;
 import utils.MapsUtils;
 
 public class OperatiiBorderou {
@@ -45,6 +47,12 @@ public class OperatiiBorderou {
 
 				borderou.setNrBorderou(borderouActiv);
 				setTipMasina(conn, borderou);
+				setLivrareTL(conn, borderou);
+
+				int minFromStart = DateTimeUtils.dateDiffInMinutes(DateTimeUtils.formatDateLocal(rs.getString("datastart")), DateTimeUtils.getCurrentDate());
+
+				borderou.setMinuteFromStart(minFromStart);
+
 			}
 
 		}
@@ -85,8 +93,24 @@ public class OperatiiBorderou {
 		borderou.setTipMasina(tipMasina);
 		borderou.setFiliala(rs.getString(2));
 
-		if (stmt != null)
-			stmt.close();
+		stmt.close();
+
+	}
+
+	private void setLivrareTL(Connection conn, Borderou borderou) throws SQLException {
+
+		PreparedStatement stmt = conn.prepareStatement(SqlQueries.getJudeteBorderou(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+		stmt.setString(1, borderou.getNrBorderou());
+		stmt.executeQuery();
+
+		ResultSet rs = stmt.getResultSet();
+		while (rs.next()) {
+			if (rs.getString(1).equals("36"))
+				borderou.setLivrareTL(true);
+		}
+
+		stmt.close();
 
 	}
 
@@ -142,7 +166,10 @@ public class OperatiiBorderou {
 				address.setSector(rs.getString("region"));
 				client.setAdresa(address);
 
-				client.setCoordGps(con, rs, address);
+				if (!rs.getString("latitudine").equals("0"))
+					client.setCoordGps(rs.getString("latitudine") + "," + rs.getString("longitudine"));
+				else
+					client.setCoordGps(con, rs, address);
 
 				client.setCodAdresa(rs.getString("adresa_client"));
 				client.setInitKm(stareMasina.getKilometraj());
@@ -153,7 +180,7 @@ public class OperatiiBorderou {
 
 			}
 
-			if (listClienti.size() > 0)
+			if (!listClienti.isEmpty())
 				calculeazaTraseuBorderou(stareMasina, listClienti, codBorderou);
 
 		}
@@ -166,7 +193,7 @@ public class OperatiiBorderou {
 		try {
 			bordRoute = MapsUtils.traseuBorderou(stareMasina, listClienti);
 		} catch (Exception e) {
-			System.out.println(e.toString());
+			MailOperations.sendMail(e.toString());
 		}
 
 		int i = 0;
@@ -178,7 +205,7 @@ public class OperatiiBorderou {
 		try {
 			saveEtapeBorderou(listClienti, stareMasina, codBorderou);
 		} catch (SQLException e) {
-			System.out.println(e.toString());
+			MailOperations.sendMail(e.toString());
 		}
 
 	}
@@ -243,7 +270,7 @@ public class OperatiiBorderou {
 						coordClient.getLongitude(), "K"));
 
 			} catch (Exception e) {
-				System.out.println(e.toString());
+				MailOperations.sendMail(e.toString());
 			}
 			listDistante.add(distanta);
 
@@ -332,6 +359,47 @@ public class OperatiiBorderou {
 		}
 
 		return nrOpriri;
+	}
+
+	public boolean permitNotificareSms(String borderou, String codClient) throws SQLException {
+		boolean permiteNotificare = false;
+
+		DBManager dbManager = new DBManager();
+
+		try (Connection conn = dbManager.getProdConnection(); PreparedStatement stmt = conn.prepareStatement(SqlQueries.getClientAnterior())) {
+
+			stmt.setString(1, borderou);
+			stmt.setString(2, borderou);
+			stmt.setString(3, codClient);
+
+			ResultSet rs = stmt.executeQuery();
+			String clientAnterior = null;
+			while (rs.next()) {
+
+				clientAnterior = rs.getString("client");
+
+			}
+
+			if (clientAnterior == null)
+				permiteNotificare = true;
+			else {
+				PreparedStatement stmt1 = conn.prepareStatement(SqlQueries.isClientLivrat());
+
+				rs = stmt.executeQuery();
+
+				while (rs.next()) {
+					permiteNotificare = true;
+
+				}
+
+				stmt1.close();
+				stmt1 = null;
+
+			}
+
+		}
+
+		return permiteNotificare;
 	}
 
 }

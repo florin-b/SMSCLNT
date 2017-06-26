@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import beans.CoordonateGps;
 import beans.StareMasina;
 import queries.SqlQueries;
+import utils.MailOperations;
 
 public class OperatiiMasina {
 
@@ -33,11 +34,37 @@ public class OperatiiMasina {
 				pozitie.setLongitude(rs.getDouble("longitude"));
 
 				stareMasina.setCoordonateGps(pozitie);
+				stareMasina.setViteza(rs.getInt("speed"));
+
 			}
 
 		}
 
 		return stareMasina;
+	}
+
+	public String getNrMasina(String codBorderou) {
+
+		DBManager dbManager = new DBManager();
+		String nrMasina = "";
+
+		try (Connection conn = dbManager.getProdConnection(); PreparedStatement prep = conn.prepareStatement(SqlQueries.getNrMasina());) {
+
+			prep.setString(1, codBorderou);
+			prep.executeQuery();
+
+			ResultSet rs = prep.getResultSet();
+
+			if (rs.next()) {
+				nrMasina = rs.getString("masina");
+			}
+
+		} catch (SQLException e) {
+			MailOperations.sendMail(e.toString());
+		}
+
+		return nrMasina;
+
 	}
 
 }

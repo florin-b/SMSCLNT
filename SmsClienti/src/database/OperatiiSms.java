@@ -19,6 +19,8 @@ import queries.SqlQueries;
 import utils.Constants;
 import utils.DBUtils;
 import utils.DateTimeUtils;
+import utils.MailOperations;
+import utils.MapsUtils;
 
 public class OperatiiSms {
 
@@ -36,7 +38,6 @@ public class OperatiiSms {
 
 		for (BeanClient client : listClienti) {
 
-			// init
 			if (distantaTotal == 0 && distParcursa == 0) {
 				distParcursa = stareMasina.getKilometraj() - client.getInitKm();
 			}
@@ -53,19 +54,23 @@ public class OperatiiSms {
 
 			if (distantaTotal > 0) {
 
-				timpSosireH = (distantaTotal) / Constants.getVitezaMedie_KM_H(borderou, listViteze);
+				double vitezaMedie = Constants.getVitezaMedie_KM_H(borderou, listViteze);
+
+				timpSosireH = (distantaTotal) / vitezaMedie;
 
 				timpSosireH += nrOpriri * Constants.getTimpStationareH(borderou.getTipMasina());
 
-				System.out.println("Timp sosire =" + timpSosireH + " , distanta = " + client);
+				if (timpSosireH >= INTERVAL_ALERTA_MIN_H && timpSosireH <= INTERVAL_ALERTA_MAX_H && !client.isSmsEmis() && DateTimeUtils.isTimeToSendSmsAlert()
+						&& !isPauzaSofer(borderou, stareMasina)) {
 
-				if (timpSosireH >= INTERVAL_ALERTA_MIN_H && timpSosireH <= INTERVAL_ALERTA_MAX_H && !client.isSmsEmis()
-						&& DateTimeUtils.isTimeToSendSmsAlert()) {
+					if (borderou.isLivrareTL()) {
+						if (MapsUtils.isOverBac(stareMasina.getLatLngCoords())) {
+							sendSmsAlert(codSofer, borderou, client, stareMasina);
+						}
 
-					sendSmsAlert(codSofer, borderou.getNrBorderou(), client, stareMasina);
-
-					System.out.println(
-							"Expediere sms =" + borderou.getNrBorderou() + " , client = " + client.getCodClient() + " , adresa = " + client.getCodAdresa());
+					} else {
+						sendSmsAlert(codSofer, borderou, client, stareMasina);
+					}
 
 					nrOpriri++;
 				}
@@ -75,7 +80,71 @@ public class OperatiiSms {
 
 	}
 
-	private boolean sendSmsAlert(String codSofer, String borderouActiv, BeanClient client, StareMasina stareMasina) throws SQLException {
+	public void expediazaSmsClientUrmator(String codSofer, Borderou borderou, Set<BeanClient> listClienti, StareMasina stareMasina,
+			List<VitezaMedie> listViteze) throws SQLException {
+
+		double timpSosireH = 0;
+
+		int nrOpriri = OperatiiBorderou.getNrOpriri(borderou.getNrBorderou());
+		double distantaTotal = 0;
+		double distParcursa = 0;
+
+		for (BeanClient client : listClienti) {
+
+			if (distantaTotal == 0 && distParcursa == 0) {
+				distParcursa = stareMasina.getKilometraj() - client.getInitKm();
+			}
+
+			distantaTotal += client.getDistClPrecedent() - distParcursa;
+
+			if (distantaTotal > 0 && distParcursa != 0)
+				distParcursa = 0;
+			else if (distantaTotal < 0) {
+				distParcursa = Math.abs(distantaTotal);
+				distantaTotal = 0;
+
+			}
+
+			if (distantaTotal > 0) {
+
+				double vitezaMedie = Constants.getVitezaMedie_KM_H(borderou, listViteze);
+
+				timpSosireH = (distantaTotal) / vitezaMedie;
+
+				timpSosireH += nrOpriri * Constants.getTimpStationareH(borderou.getTipMasina());
+
+				if (timpSosireH >= INTERVAL_ALERTA_MIN_H && timpSosireH <= INTERVAL_ALERTA_MAX_H && !client.isSmsEmis()
+						&& DateTimeUtils.isTimeToSendSmsAlert()) {
+
+					OperatiiBorderou opBorderou = new OperatiiBorderou();
+
+					boolean permitSms = opBorderou.permitNotificareSms(borderou.getNrBorderou(), client.getCodClient());
+
+					if (borderou.isLivrareTL()) {
+						if (MapsUtils.isOverBac(stareMasina.getLatLngCoords())) {
+
+							if (permitSms) {
+								sendSmsAlert(codSofer, borderou, client, stareMasina);
+								break;
+							}
+						}
+
+					} else {
+						if (permitSms) {
+							sendSmsAlert(codSofer, borderou, client, stareMasina);
+							break;
+						}
+					}
+
+					nrOpriri++;
+				}
+			}
+
+		}
+
+	}
+
+	private boolean sendSmsAlert(String codSofer, Borderou borderouActiv, BeanClient client, StareMasina stareMasina) throws SQLException {
 		DBManager dbManager = new DBManager();
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -88,7 +157,7 @@ public class OperatiiSms {
 		try (Connection conn = dbManager.getProdConnection(); PreparedStatement stmt = conn.prepareStatement(SqlQueries.sendAlertClient())) {
 
 			stmt.setString(1, codSofer);
-			stmt.setString(2, borderouActiv);
+			stmt.setString(2, borderouActiv.getNrBorderou());
 			stmt.setString(3, client.getCodClient());
 			stmt.setString(4, dateFormat.format(cal.getTime()));
 			stmt.setString(5, timeFormat.format(cal.getTime()));
@@ -100,15 +169,35 @@ public class OperatiiSms {
 
 			String nrTel = getTelNumber(conn, client.getCodClient());
 
-			if (nrTel.trim().length() > 0)
-				SendSmsClient.sendSms(nrTel, borderouActiv, client);
+			if (nrTel.trim().length() > 0 && borderouActiv.getFiliala().equals("GL10"))
+				SendSmsClient.sendSms(nrTel, borderouActiv.getNrBorderou(), client);
 
 		} catch (SQLException ex) {
-			System.out.println("Eroare: " + codSofer + " , " + client);
+			MailOperations.sendMail(ex.toString());
 		}
 
 		return result;
 
+	}
+
+	private boolean isMasinaOprita(StareMasina stareMasina) {
+
+		if (stareMasina.getViteza() == 0)
+			return true;
+
+		return false;
+
+	}
+
+	private boolean isPauzaSofer(Borderou borderou, StareMasina stareMasina) {
+
+		if (stareMasina.getViteza() == 0)
+			return true;
+
+		if (borderou.getMinuteFromStart() > 600)
+			return true;
+
+		return borderou.getMinuteFromStart() >= 280 && borderou.getMinuteFromStart() <= 330;
 	}
 
 	private String getTelNumber(Connection connection, String codClient) throws SQLException {

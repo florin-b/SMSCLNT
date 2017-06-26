@@ -30,3 +30,5 @@
 2016-10-03 10:42:17.973 : java.lang.NullPointerException
 2017-05-05 11:47:31.292 : java.util.NoSuchElementException: No value present
 2017-05-05 11:48:29.911 : java.util.NoSuchElementException: No value present
+2017-05-11 10:25:52.744 : java.lang.NullPointerException
+2017-05-11 10:43:38.984 : java.lang.NullPointerException

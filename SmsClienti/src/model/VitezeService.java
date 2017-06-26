@@ -11,6 +11,7 @@ import database.DBManager;
 import enums.EnumTipMasina;
 import queries.SqlQueries;
 import utils.DateTimeUtils;
+import utils.MailOperations;
 
 public class VitezeService {
 
@@ -36,7 +37,7 @@ public class VitezeService {
 			}
 
 		} catch (Exception ex) {
-			System.out.println(ex.toString());
+			MailOperations.sendMail(ex.toString());
 		}
 
 		return listVM;

@@ -9,7 +9,7 @@ import predicates.VMPredicates;
 
 public class Constants {
 
-	public static String GOOGLE_MAPS_API_KEY = "AIzaSyCO29NKFuNalBKo4tXhsvHBWYGYT6aN7ZY";
+	public static String GOOGLE_MAPS_API_KEY = "AIzaSyA-h9799tCt5YDGAnZIKxqP-RmzPNEEo64";
 
 	public static double getTimpStationareH(EnumTipMasina tipMasina) {
 
