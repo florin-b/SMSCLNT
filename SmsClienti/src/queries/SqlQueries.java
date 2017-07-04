@@ -173,15 +173,15 @@ public class SqlQueries {
 	public static String getClientAnterior() {
 
 		StringBuilder str = new StringBuilder();
-		str.append(" select client from sapprd.zordinelivrari where borderou =? and pozitie = ");
-		str.append(" (select pozitie from sapprd.zordinelivrari where borderou =? and client =?) - 1 ");
+		str.append(" select client, codadresa from sapprd.zordinelivrari where borderou =? and pozitie = ");
+		str.append(" (select pozitie from sapprd.zordinelivrari where borderou =? and client =? and codadresa=?) - 1 ");
 		return str.toString();
 
 	}
 
 	public static String isClientLivrat() {
 		StringBuilder str = new StringBuilder();
-		str.append(" select 1 from sapprd.zevenimentsofer where document=? and client =? ");
+		str.append(" select 1 from sapprd.zevenimentsofer where document=? and client =? and codadresa =?");
 		return str.toString();
 
 	}

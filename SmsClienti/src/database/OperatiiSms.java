@@ -118,7 +118,7 @@ public class OperatiiSms {
 
 					OperatiiBorderou opBorderou = new OperatiiBorderou();
 
-					boolean permitSms = opBorderou.permitNotificareSms(borderou.getNrBorderou(), client.getCodClient());
+					boolean permitSms = opBorderou.permitNotificareSms(borderou.getNrBorderou(), client);
 
 					if (borderou.isLivrareTL()) {
 						if (MapsUtils.isOverBac(stareMasina.getLatLngCoords())) {

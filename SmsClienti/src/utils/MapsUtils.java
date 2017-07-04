@@ -7,6 +7,7 @@ import java.util.Set;
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
+import com.google.maps.errors.OverQueryLimitException;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
@@ -60,8 +61,10 @@ public class MapsUtils {
 
 			routes = DirectionsApi.newRequest(context).mode(TravelMode.DRIVING).origin(start).destination(stop).waypoints(arrayPoints).mode(TravelMode.DRIVING)
 					.optimizeWaypoints(false).await();
+		} catch (OverQueryLimitException q) {
+			MailOperations.sendMail("sms: " + q.toString());
 		} catch (Exception ex) {
-			MailOperations.sendMail("traseuBorderou: " + ex.toString());
+			MailOperations.sendMail(" sms traseuBorderou: " + ex.toString());
 		}
 
 		return routes;

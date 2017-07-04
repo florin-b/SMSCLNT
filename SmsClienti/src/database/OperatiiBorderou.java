@@ -361,7 +361,7 @@ public class OperatiiBorderou {
 		return nrOpriri;
 	}
 
-	public boolean permitNotificareSms(String borderou, String codClient) throws SQLException {
+	public boolean permitNotificareSms(String borderou, BeanClient client) throws SQLException {
 		boolean permiteNotificare = false;
 
 		DBManager dbManager = new DBManager();
@@ -370,13 +370,16 @@ public class OperatiiBorderou {
 
 			stmt.setString(1, borderou);
 			stmt.setString(2, borderou);
-			stmt.setString(3, codClient);
+			stmt.setString(3, client.getCodClient());
+			stmt.setString(4, client.getCodAdresa());
 
 			ResultSet rs = stmt.executeQuery();
 			String clientAnterior = null;
+			String adresaAnterioara = null;
 			while (rs.next()) {
 
 				clientAnterior = rs.getString("client");
+				adresaAnterioara = rs.getString("codadresa");
 
 			}
 
@@ -385,9 +388,14 @@ public class OperatiiBorderou {
 			else {
 				PreparedStatement stmt1 = conn.prepareStatement(SqlQueries.isClientLivrat());
 
-				rs = stmt.executeQuery();
+				stmt1.setString(1, borderou);
+				stmt1.setString(2, clientAnterior);
+				stmt1.setString(3, adresaAnterioara);
+				
+				rs = stmt1.executeQuery();
 
 				while (rs.next()) {
+					
 					permiteNotificare = true;
 
 				}
